@@ -1,0 +1,108 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Add New Project - Admin{% endblock %}
+{% block content %}
+<style>
+    /* Styling for the forms to match the premium theme */
+    .glass-form-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    
+    .form-control, .form-select {
+        background-color: rgba(15, 23, 42, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #f1f5f9 !important;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+    }
+    
+    label {
+        color: #94a3b8;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+<div class="row justify-content-center mb-5">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-accent m-0"><i class="fas fa-plus-circle"></i> Add New Project</h2>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-4">Cancel</a>
+        </div>
+        
+        <div class="glass-form-card">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="{{ form.title.id_for_label }}">Project Title</label>
+                        <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" class="form-control" placeholder="e.g. E-Commerce Backend" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.domain.id_for_label }}">Domain</label>
+                        <input type="text" name="{{ form.domain.name }}" id="{{ form.domain.id_for_label }}" class="form-control" placeholder="e.g. Web, AI, IoT" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.technology.id_for_label }}">Technology Stack</label>
+                        <input type="text" name="{{ form.technology.name }}" id="{{ form.technology.id_for_label }}" class="form-control" placeholder="e.g. Python, React" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.difficulty.id_for_label }}">Difficulty</label>
+                        <select name="{{ form.difficulty.name }}" id="{{ form.difficulty.id_for_label }}" class="form-select" required>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="{{ form.estimated_time.id_for_label }}">Estimated Time to Complete</label>
+                        <input type="text" name="{{ form.estimated_time.name }}" id="{{ form.estimated_time.id_for_label }}" class="form-control" placeholder="e.g. 2 weeks, 40 hours" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="{{ form.description.id_for_label }}">Project Description</label>
+                        <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" class="form-control" rows="3" placeholder="What is this project about?" required></textarea>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="{{ form.roadmap.id_for_label }}">Step-by-Step Roadmap</label>
+                        <textarea name="{{ form.roadmap.name }}" id="{{ form.roadmap.id_for_label }}" class="form-control" rows="4" placeholder="1. Setup environment...&#10;2. Build models...&#10;3. Create API..." required></textarea>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <label for="{{ form.learning_resources.id_for_label }}">Tutorials & Learning Resources</label>
+                        <textarea name="{{ form.learning_resources.name }}" id="{{ form.learning_resources.id_for_label }}" class="form-control" rows="3" placeholder="Paste links to documentation, YouTube tutorials, etc." required></textarea>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">Deploy Project to Forge</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

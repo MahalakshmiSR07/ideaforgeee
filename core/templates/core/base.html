@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ideaforge{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=7">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="loader"></div>
+        <h2 class="text-light fw-bold" style="letter-spacing: 2px;">IDEAFORGE</h2>
+        <p class="text-accent" style="letter-spacing: 5px; font-size: 0.8rem;">INITIALIZING ENGINE</p>
+    </div>
+
+
+    {% block navbar %}
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'landing' %}"><i class="fas fa-lightbulb"></i> Ideaforge</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <li class="nav-item"><a class="nav-link text-accent fw-bold" href="{% url 'home' %}"><i class="fas fa-shield-alt"></i> Admin Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'add_project' %}"><i class="fas fa-plus"></i> Add Project</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Dashboard</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'search' %}">Search Projects</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'quiz' %}">Take Quiz</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'saved_projects' %}">Saved Projects</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
+                        <li class="nav-item">
+                            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="nav-link btn btn-link" style="border: none;">Logout</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <div class="{% block container_class %}container mt-4{% endblock %}">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'core/js/script.js' %}?v=3"></script>
+    <script>
+        // Splash screen logic
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                var splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(function() { splash.style.display = 'none'; }, 500);
+                }
+            }, 800); // 0.8s minimum display time
+        });
+    </script>
+</body>
+</html>

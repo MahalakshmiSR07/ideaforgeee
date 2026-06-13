@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+venv/
+ENV/
+env/
+
+# Databases
+db.sqlite3
+db.sqlite3-journal
+
+# Django staticfiles directory (when collected)
+static_root/
+staticfiles/
+
+# OS files
+.DS_Store
+Thumbs.db

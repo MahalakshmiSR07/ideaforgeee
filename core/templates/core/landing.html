@@ -1,0 +1,248 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Welcome to the IdeaForge{% endblock %}
+
+{% block container_class %}container-fluid p-0 m-0{% endblock %}
+
+{% block content %}
+<style>
+    /* Native Landing Page Styles */
+    .hero-section {
+        min-height: calc(100vh - 76px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        padding: 4rem 1rem;
+        margin-top: -1.5rem;
+        /* pull up under navbar */
+        overflow: hidden;
+    }
+
+    .hero-content {
+        z-index: 10;
+        max-width: 800px;
+        animation: fadeInUp 1s ease-out forwards;
+        opacity: 0;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #f97316 0%, #fbbf24 50%, #eab308 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+        letter-spacing: -1px;
+        line-height: 1.2;
+    }
+
+    @media (min-width: 768px) {
+        .hero-title {
+            font-size: 4.5rem;
+        }
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: #94a3b8;
+        margin-bottom: 3rem;
+        line-height: 1.6;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+    .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        margin-top: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .btn-hero {
+        padding: 0.8rem 2.5rem;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        text-decoration: none;
+    }
+
+    .btn-hero-primary {
+        background: linear-gradient(135deg, #f97316 0%, #eab308 100%);
+        color: #0f1115 !important;
+        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+        border: none;
+    }
+
+    .btn-hero-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6);
+        color: #000 !important;
+    }
+
+    .btn-hero-secondary {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #e2e8f0 !important;
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-hero-secondary:hover {
+        border-color: #f97316;
+        background: rgba(249, 115, 22, 0.1);
+        color: white !important;
+    }
+
+    /* Unique Element: Animated Terminal */
+    .terminal-container {
+        max-width: 700px;
+        margin: 0 auto 4rem auto;
+        background: #0f111a;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        overflow: hidden;
+        text-align: left;
+        font-family: 'Courier New', Courier, monospace;
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.2s forwards;
+    }
+
+    .terminal-header {
+        background: #1e293b;
+        padding: 0.5rem 1rem;
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        border-bottom: 1px solid #334155;
+    }
+
+    .terminal-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+
+    .dot-red {
+        background: #ef4444;
+    }
+
+    .dot-yellow {
+        background: #eab308;
+    }
+
+    .dot-green {
+        background: #22c55e;
+    }
+
+    .terminal-body {
+        padding: 1.5rem;
+        color: #a8b2d1;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .typewriter {
+        overflow: hidden;
+        /* Ensures the content is not revealed until the animation */
+        border-right: .15em solid orange;
+        /* The typwriter cursor */
+        white-space: nowrap;
+        /* Keeps the content on a single line */
+        margin: 0 auto;
+        /* Gives that scrolling effect as the typing happens */
+        letter-spacing: .15em;
+        /* Adjust as needed */
+        animation:
+            typing 3.5s steps(40, end),
+            blink-caret .75s step-end infinite;
+        color: #10b981;
+    }
+
+    /* The typing effect */
+    @keyframes typing {
+        from {
+            width: 0
+        }
+
+        to {
+            width: 100%
+        }
+    }
+
+    /* The typewriter cursor effect */
+    @keyframes blink-caret {
+
+        from,
+        to {
+            border-color: transparent
+        }
+
+        50% {
+            border-color: orange;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome to the IdeaForge</h1>
+        <p class="hero-subtitle">
+            Your next coding masterpiece is waiting. Choose a domain to ignite your project path.
+        </p>
+
+        <div class="hero-buttons">
+            {% if user.is_authenticated %}
+            {% if user.is_staff %}
+            <a href="{% url 'home' %}" class="btn-hero btn-hero-primary">Go to Admin Dashboard</a>
+            {% else %}
+            <a href="{% url 'profile' %}" class="btn-hero btn-hero-primary">Go to Dashboard</a>
+            {% endif %}
+            {% else %}
+            <a href="{% url 'register' %}" class="btn-hero btn-hero-primary">Create Account</a>
+            <a href="{% url 'login' %}" class="btn-hero btn-hero-secondary">Login</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Unique Animated Terminal Feature -->
+    <div class="terminal-container w-100">
+        <div class="terminal-header">
+            <div class="terminal-dot dot-red"></div>
+            <div class="terminal-dot dot-yellow"></div>
+            <div class="terminal-dot dot-green"></div>
+            <div style="margin-left: auto; color: #64748b; font-size: 0.8rem;">ideaforge-engine.sh</div>
+        </div>
+        <div class="terminal-body">
+            <div><span style="color:#eab308">user@ideaforge</span>:<span style="color:#3b82f6">~</span>$
+                ./init_project.sh</div>
+            <div style="margin-top: 0.5rem;">[+] Connecting to IdeaForge AI matching engine...</div>
+            <div>[+] Analyzing skill level and preferred domains...</div>
+            <div class="typewriter" style="margin-top: 1rem; width: fit-content;">>>> PERFECT PROJECT MATCH FOUND. READY
+                TO BUILD.</div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

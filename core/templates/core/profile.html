@@ -1,0 +1,315 @@
+{% extends 'core/base.html' %}
+{% block title %}User Dashboard - Ideaforge{% endblock %}
+{% block content %}
+<style>
+    .dashboard-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .panel {
+        background: rgba(20, 20, 30, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .metric-badge {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: var(--accent);
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    .explore-scroll {
+        display: flex;
+        overflow-x: auto;
+        gap: 1.5rem;
+        padding-bottom: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary) transparent;
+    }
+    .explore-scroll::-webkit-scrollbar {
+        height: 8px;
+    }
+    .explore-scroll::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 4px;
+    }
+    .explore-card {
+        flex: 0 0 300px;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 12px;
+        padding: 1.25rem;
+        transition: transform 0.3s;
+        display: flex;
+        flex-direction: column;
+    }
+    .explore-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(139, 92, 246, 0.5);
+    }
+    .timeline {
+        border-left: 2px solid var(--border);
+        padding-left: 1.5rem;
+        margin-left: 1rem;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.85rem;
+        top: 0.25rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--primary);
+    }
+    
+    /* Top Bar with Avatar */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    .avatar-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .avatar-btn:hover {
+        transform: scale(1.05);
+    }
+    
+    /* Offcanvas Profile Glassmorphism */
+    .offcanvas {
+        background: rgba(15, 17, 21, 0.8) !important;
+        backdrop-filter: blur(25px);
+        border-left: 1px solid rgba(139, 92, 246, 0.3);
+        color: white;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    
+    <!-- Top Header: Title + Avatar -->
+    <div class="dashboard-header">
+        <div>
+            <h2 class="fw-bold mb-0">Welcome, {{ request.user.username }}</h2>
+            <p class="text-secondary">Here is your customized Ideaforge workspace.</p>
+        </div>
+        <!-- Clickable Avatar opens Offcanvas -->
+        <button class="avatar-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#userProfileOffcanvas">
+            <i class="fas fa-user-circle"></i>
+        </button>
+    </div>
+
+    <div class="dashboard-grid">
+        
+        <!-- Skill & Evaluation Metrics -->
+        <div class="panel">
+            <h4 class="mb-4"><i class="fas fa-chart-line text-accent me-2"></i>Evaluation Metrics</h4>
+            <div class="row align-items-center">
+                <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="d-flex gap-3">
+                        <div class="metric-badge">
+                            <i class="fas fa-brain fs-4"></i>
+                            <div>
+                                <div class="small text-secondary">Latest Score</div>
+                                <div class="fs-5">{{ profile.quiz_score }} / 10</div>
+                            </div>
+                        </div>
+                        <div class="metric-badge" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: var(--primary);">
+                            <i class="fas fa-tasks fs-4"></i>
+                            <div>
+                                <div class="small text-secondary">Quizzes Taken</div>
+                                <div class="fs-5">{{ profile.total_quizzes }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small text-secondary">Accuracy / Progress</span>
+                        <span class="small text-accent fw-bold">{{ profile.quiz_score|default:0 }}0%</span>
+                    </div>
+                    <div class="progress" style="height: 10px; background: rgba(255,255,255,0.1);">
+                        <div class="progress-bar bg-accent" role="progressbar" style="width: {{ profile.quiz_score|default:0 }}0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore Ideas (Horizontal Scroll) -->
+        <div class="panel" style="background: linear-gradient(135deg, rgba(30, 34, 41, 0.4), rgba(9, 0, 20, 0.5));">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0"><i class="fas fa-lightbulb text-warning me-2"></i>Explore Ideas</h4>
+                <a href="{% url 'search' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            
+            <div class="explore-scroll">
+                {% for project in explore_projects %}
+                <div class="explore-card">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="badge bg-primary" style="font-size: 0.75rem;">{{ project.domain }}</span>
+                        <span class="badge bg-secondary" style="font-size: 0.75rem;">{{ project.difficulty }}</span>
+                    </div>
+                    <h6 class="fw-bold mb-2 text-light">{{ project.title|truncatechars:40 }}</h6>
+                    <p class="text-secondary small mb-3 flex-grow-1">{{ project.description|truncatewords:12 }}</p>
+                    <a href="{% url 'project_detail' project.pk %}" class="btn btn-sm btn-primary w-100 mt-auto">Explore Blueprint</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Bookmarked Projects Grid -->
+        <div class="panel">
+            <h4 class="mb-4"><i class="fas fa-bookmark text-primary me-2"></i>Saved Project Blueprints</h4>
+            {% if saved_projects %}
+            <div class="project-grid">
+                {% for project in saved_projects %}
+                <div class="card p-3 m-0" style="background: rgba(0,0,0,0.2);">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge bg-primary">{{ project.domain }}</span>
+                        <span class="badge bg-secondary">{{ project.difficulty }}</span>
+                    </div>
+                    <h6 class="fw-bold mb-2">{{ project.title|truncatechars:35 }}</h6>
+                    <p class="text-secondary small mb-3">{{ project.description|truncatewords:10 }}</p>
+                    <div class="mt-auto d-flex gap-2">
+                        <a href="{% url 'project_detail' project.pk %}" class="btn btn-sm btn-outline-primary flex-grow-1">View</a>
+                        <a href="{% url 'remove_saved_project' project.pk %}" class="btn btn-sm btn-outline-danger" title="Remove"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-secondary bg-transparent border-secondary text-center">
+                You haven't saved any projects yet. <a href="{% url 'search' %}" class="text-accent">Explore projects</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Activity Stream -->
+        <div class="panel">
+            <h4 class="mb-4"><i class="fas fa-history text-secondary me-2"></i>Recent Activity</h4>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <p class="mb-1 text-light">Logged into Dashboard</p>
+                    <small class="text-secondary">Just now</small>
+                </div>
+                {% if profile.total_quizzes > 0 %}
+                <div class="timeline-item">
+                    <p class="mb-1 text-light">Completed Skill Evaluation Quiz</p>
+                    <small class="text-accent">Score: {{ profile.quiz_score }}/10</small>
+                </div>
+                {% endif %}
+                {% if saved_projects %}
+                <div class="timeline-item">
+                    <p class="mb-1 text-light">Bookmarked <strong>{{ saved_projects.0.title }}</strong></p>
+                    <small class="text-secondary">Recently</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Right Side Profile Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="userProfileOffcanvas">
+    <div class="offcanvas-header border-bottom border-secondary">
+        <h5 class="offcanvas-title fw-bold"><i class="fas fa-user-circle me-2 text-primary"></i>Your Profile</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        
+        <div class="text-center mb-4">
+            <div class="avatar-btn mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem; cursor: default;">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h4 class="fw-bold">{{ request.user.username }}</h4>
+            <p class="text-secondary small">{{ profile.bio|default:"No bio set." }}</p>
+            
+            <div class="d-flex justify-content-center gap-3">
+                {% if profile.github_link %}
+                    <a href="{{ profile.github_link }}" target="_blank" class="text-light fs-5"><i class="fab fa-github"></i></a>
+                {% endif %}
+                {% if profile.linkedin_link %}
+                    <a href="{{ profile.linkedin_link }}" target="_blank" class="text-light fs-5"><i class="fab fa-linkedin"></i></a>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr style="border-color: rgba(255,255,255,0.1);">
+        
+        <div class="mb-4">
+            <h6 class="text-accent mb-3"><i class="fas fa-sliders-h me-2"></i>Engine Preferences</h6>
+            <div class="p-3 rounded mb-2" style="background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary);">
+                <small class="text-secondary d-block">Domain</small>
+                <span class="fw-bold">{{ profile.preferred_domain|default:"Not Set" }}</span>
+            </div>
+            <div class="p-3 rounded mb-2" style="background: rgba(255,255,255,0.05); border-left: 3px solid var(--accent);">
+                <small class="text-secondary d-block">Tech Stack</small>
+                <span class="fw-bold">{{ profile.preferred_technology|default:"Not Set" }}</span>
+            </div>
+            <div class="p-3 rounded mb-2" style="background: rgba(255,255,255,0.05); border-left: 3px solid #f59e0b;">
+                <small class="text-secondary d-block">Difficulty</small>
+                <span class="fw-bold">{{ profile.preferred_difficulty|default:"Not Set" }}</span>
+            </div>
+            <a href="{% url 'quiz' %}" class="btn btn-sm btn-outline-primary w-100 mt-2">Retake Engine Quiz</a>
+        </div>
+        
+        <hr style="border-color: rgba(255,255,255,0.1);">
+
+        <!-- Edit Form -->
+        <h6 class="mb-3"><i class="fas fa-edit me-2"></i>Edit Details</h6>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label small">Bio</label>
+                <textarea name="bio" class="form-control form-control-sm" rows="2">{{ profile.bio|default:'' }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small">GitHub URL</label>
+                <input type="url" name="github_link" class="form-control form-control-sm" value="{{ profile.github_link|default:'' }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label small">LinkedIn URL</label>
+                <input type="url" name="linkedin_link" class="form-control form-control-sm" value="{{ profile.linkedin_link|default:'' }}">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+
+        <a href="{% url 'password_reset' %}" class="btn btn-outline-secondary w-100 mt-4">
+            <i class="fas fa-key me-2"></i>Security Settings
+        </a>
+    </div>
+</div>
+
+{% endblock %}

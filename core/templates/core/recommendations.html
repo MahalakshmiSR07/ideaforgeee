@@ -1,0 +1,33 @@
+{% extends 'core/base.html' %}
+{% block title %}Recommendations - Ideaforge{% endblock %}
+{% block content %}
+<h2 class="mb-4 text-primary"><i class="fas fa-magic"></i> Your Personalized Recommendations</h2>
+
+{% if projects %}
+    <div class="row">
+    {% for project in projects %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 p-3">
+                <h4>{{ project.title }}</h4>
+                <div class="mb-2">
+                    <span class="badge bg-primary">{{ project.domain }}</span>
+                    <span class="badge bg-secondary">{{ project.technology }}</span>
+                    <span class="badge bg-info">{{ project.difficulty }}</span>
+                </div>
+                <p class="text-secondary">{{ project.description|truncatewords:20 }}</p>
+                <div class="mt-auto pt-3 border-top" style="border-color: var(--border) !important;">
+                    <a href="{% url 'project_detail' project.pk %}" class="btn btn-outline-primary btn-sm">View Details & Roadmap</a>
+                    <a href="{% url 'save_project' project.pk %}" class="btn btn-outline-success btn-sm float-end"><i class="fas fa-bookmark"></i> Save</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info" style="background-color: var(--card-bg); border-color: var(--border); color: var(--text-primary);">
+        <i class="fas fa-info-circle"></i> We couldn't find any exact matches. Try updating your profile or taking the quiz again!
+        <br><br>
+        <a href="{% url 'quiz' %}" class="btn btn-primary">Retake Quiz</a>
+    </div>
+{% endif %}
+{% endblock %}

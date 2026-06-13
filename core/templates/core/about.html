@@ -1,0 +1,158 @@
+{% extends 'core/base.html' %}
+{% block title %}About Us - Ideaforge{% endblock %}
+
+{% block content %}
+<style>
+    .about-header {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 24px;
+        padding: 3rem 2rem;
+        margin-bottom: 3rem;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .feature-card {
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(16, 185, 129, 0.4) !important;
+        box-shadow: 0 12px 40px rgba(16, 185, 129, 0.15);
+    }
+    
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        background: rgba(99, 102, 241, 0.15);
+        color: #6366f1;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        font-size: 1.5rem;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(45deg, #6366f1, #10b981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+
+<div class="container py-4">
+    <!-- Header Hero Section -->
+    <div class="about-header text-center position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-50 translate-middle-x opacity-10" style="font-size: 12rem; z-index: -1; color: #6366f1;">
+            <i class="fas fa-lightbulb"></i>
+        </div>
+        <h1 class="display-3 fw-bold text-light mb-3">Welcome to <span style="background: linear-gradient(to right, #6366f1, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ideaforge</span></h1>
+        <p class="lead text-secondary mx-auto mb-4" style="max-width: 800px; font-size: 1.25rem;">
+            IdeaForge is a premium project discovery and learning platform designed to bridge the gap between learning syntax and building full-scale, professional applications.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'search' %}" class="btn btn-primary rounded-pill px-4 py-2"><i class="fas fa-search me-2"></i>Explore Projects</a>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-outline-light rounded-pill px-4 py-2">Join the Forge</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Our Vision & Mission -->
+    <div class="row align-items-center mb-5 py-3">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <h2 class="text-primary mb-3"><i class="fas fa-compass me-2"></i>Our Vision & Mission</h2>
+            <p class="text-secondary" style="line-height: 1.8;">
+                At IdeaForge, we believe that the absolute best way to master computer science and software development is by <strong>building real things</strong>. Rote learning and watching infinite tutorials without coding leads to the tutorial-trap.
+            </p>
+            <p class="text-secondary" style="line-height: 1.8;">
+                We provide learners with realistic, detailed project prompts, complete step-by-step engineering roadmaps, and curated learning references. Whether you are an absolute beginner looking for your first simple web app, or an advanced developer wanting to build smart AI architectures, IdeaForge has a forged path for you.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-4 border-secondary shadow-lg">
+                <h4 class="text-accent mb-4"><i class="fas fa-cogs me-2"></i>Platform Statistics</h4>
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="stat-number">150+</div>
+                        <div class="text-secondary font-monospace" style="font-size: 0.85rem;">PREMIUM PROJECTS</div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="stat-number">3+</div>
+                        <div class="text-secondary font-monospace" style="font-size: 0.85rem;">DIFFICULTY LEVELS</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-number">10+</div>
+                        <div class="text-secondary font-monospace" style="font-size: 0.85rem;">TECH STACKS</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-number">100%</div>
+                        <div class="text-secondary font-monospace" style="font-size: 0.85rem;">FREE & OPEN SOURCE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Features Grid -->
+    <h2 class="text-center mb-4 text-light"><i class="fas fa-star me-2"></i>Key Platform Features</h2>
+    <div class="row g-4 mb-5">
+        <!-- Feature 1 -->
+        <div class="col-md-4">
+            <div class="card feature-card p-4">
+                <div class="icon-wrapper">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4 class="text-light">Smart Recommendations</h4>
+                <p class="text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
+                    Our customized interactive onboarding quiz analyzes your team size, stack preferences, time availability, and passion to perfectly match you with your next masterpiece project.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="col-md-4">
+            <div class="card feature-card p-4">
+                <div class="icon-wrapper" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.2);">
+                    <i class="fas fa-map-signs"></i>
+                </div>
+                <h4 class="text-light">Engineering Roadmaps</h4>
+                <p class="text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
+                    Never get stuck wondering "what's next". Every project comes equipped with an extensive, highly actionable step-by-step roadmap showing you how to build the application from scratch.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="col-md-4">
+            <div class="card feature-card p-4">
+                <div class="icon-wrapper" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-color: rgba(245, 158, 11, 0.2);">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h4 class="text-light">Curated Resources</h4>
+                <p class="text-secondary" style="font-size: 0.95rem; line-height: 1.6;">
+                    No need to comb the web for good documentation. We attach exact developer resources, videos, and articles for all technologies, giving you a smooth, uninterrupted learning experience.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="row mt-4 mb-5">
+        <div class="col-md-12 text-center border-top border-secondary pt-4">
+            <p class="text-secondary mb-3">Ready to find your next great coding adventure?</p>
+            <a href="{% url 'quiz' %}" class="btn btn-accent rounded-pill px-4 py-2"><i class="fas fa-clipboard-list me-2"></i>Take Onboarding Quiz</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,694 @@
+{% extends 'core/base.html' %}
+{% block title %}{{ project.title }} - Ideaforge{% endblock %}
+{% block content %}
+<style>
+    .project-header {
+        background: linear-gradient(135deg, rgba(26, 0, 51, 0.9), rgba(9, 0, 20, 0.95));
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 16px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(139, 92, 246, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+    .project-header::before {
+        content: '';
+        position: absolute;
+        top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
+        pointer-events: none;
+    }
+    .badge-premium {
+        background: rgba(139, 92, 246, 0.2);
+        color: #c4b5fd;
+        border: 1px solid rgba(139, 92, 246, 0.4);
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+    .content-card {
+        background: rgba(30, 34, 41, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .content-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        border-color: rgba(139, 92, 246, 0.3);
+    }
+    .section-title {
+        color: #c4b5fd;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .section-title i {
+        color: var(--accent);
+        background: rgba(16, 185, 129, 0.1);
+        padding: 10px;
+        border-radius: 12px;
+    }
+    
+    /* Roadmap & Links Styling */
+    .roadmap-box, .resources-box {
+        background: rgba(15, 17, 21, 0.8);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border-left: 4px solid var(--primary);
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #e2e8f0;
+    }
+    .roadmap-box h1, .roadmap-box h2, .roadmap-box h3,
+    .resources-box h1, .resources-box h2, .resources-box h3 {
+        color: white;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+    .roadmap-box ul, .resources-box ul {
+        padding-left: 1.5rem;
+    }
+    .roadmap-box li, .resources-box li {
+        margin-bottom: 0.5rem;
+    }
+    .resources-box a {
+        color: #8b5cf6;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    .resources-box a:hover {
+        color: #a78bfa;
+        text-decoration: underline;
+    }
+
+    /* Action Sidebar */
+    .action-sidebar {
+        position: sticky;
+        top: 2rem;
+    }
+    .btn-save-project {
+        background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+        border: none;
+        color: white;
+        font-weight: bold;
+        letter-spacing: 1px;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        transition: all 0.3s ease;
+    }
+    .btn-save-project:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+        color: white;
+    }
+
+    /* Interactive Roadmap Styles */
+    .progress-container {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        height: 10px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    .progress-bar-fill {
+        background: linear-gradient(90deg, #8b5cf6, #10b981);
+        height: 100%;
+        width: 0%;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    .progress-text {
+        font-size: 0.9rem;
+        color: #a78bfa;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+    }
+    .phase-card {
+        background: rgba(20, 24, 30, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .phase-card.completed-phase {
+        border-color: rgba(16, 185, 129, 0.3);
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.05);
+    }
+    .phase-header {
+        background: rgba(30, 37, 48, 0.4);
+        padding: 1.2rem 1.5rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+        transition: background 0.2s;
+    }
+    .phase-header:hover {
+        background: rgba(30, 37, 48, 0.7);
+    }
+    .phase-title-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .phase-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+    }
+    .phase-badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    .phase-badge.todo {
+        background: rgba(139, 92, 246, 0.15);
+        color: #a78bfa;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .phase-badge.in-progress {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .phase-badge.completed {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .phase-body {
+        padding: 1.5rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: none;
+    }
+    .phase-card.active .phase-body {
+        display: block;
+        animation: slideDown 0.3s ease-out;
+    }
+    .task-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 1rem;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.02);
+        margin-bottom: 0.75rem;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    .task-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(139, 92, 246, 0.2);
+    }
+    .task-checkbox-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    .task-checkbox {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0; width: 0;
+    }
+    .checkmark {
+        position: absolute;
+        top: 0; left: 0;
+        height: 22px; width: 22px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+    .task-item:hover .checkmark {
+        border-color: #8b5cf6;
+    }
+    .task-checkbox:checked ~ .checkmark {
+        background-color: #10b981;
+        border-color: #10b981;
+        transform: scale(1.1);
+    }
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+    .task-checkbox:checked ~ .checkmark:after {
+        display: block;
+    }
+    .task-checkbox-wrapper .checkmark:after {
+        left: 7px;
+        top: 3px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+    .task-content {
+        flex-grow: 1;
+    }
+    .task-title {
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 0.25rem;
+        transition: all 0.2s;
+    }
+    .task-description {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        margin: 0;
+        line-height: 1.5;
+        transition: all 0.2s;
+    }
+    .task-item.completed-task .task-title {
+        color: #64748b;
+        text-decoration: line-through;
+    }
+    .task-item.completed-task .task-description {
+        color: #475569;
+        text-decoration: line-through;
+    }
+    .task-item.completed-task {
+        background: rgba(16, 185, 129, 0.03);
+        border-color: rgba(16, 185, 129, 0.1);
+    }
+    .toggle-icon {
+        color: #64748b;
+        transition: transform 0.3s;
+    }
+    .phase-card.active .toggle-icon {
+        transform: rotate(180deg);
+        color: #a78bfa;
+    }
+    
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        
+        <!-- MAIN CONTENT COLUMN -->
+        <div class="col-lg-8">
+            
+            <!-- Hero Header -->
+            <div class="project-header">
+                <h1 class="display-5 fw-bolder text-white mb-4" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                    {{ project.title }}
+                </h1>
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <span class="badge rounded-pill badge-premium"><i class="fas fa-layer-group me-2"></i>{{ project.domain }}</span>
+                    <span class="badge rounded-pill badge-premium"><i class="fas fa-code me-2"></i>{{ project.technology }}</span>
+                    <span class="badge rounded-pill badge-premium"><i class="fas fa-tachometer-alt me-2"></i>{{ project.difficulty }}</span>
+                    <span class="badge rounded-pill badge-premium" style="background: rgba(16,185,129,0.15); color: #34d399; border-color: rgba(16,185,129,0.3);">
+                        <i class="far fa-clock me-2"></i>{{ project.estimated_time }}
+                    </span>
+                </div>
+                <p class="lead text-light" style="opacity: 0.9; font-size: 1.15rem; line-height: 1.7; text-wrap: balance;">
+                    {{ project.description }}
+                </p>
+            </div>
+
+            <!-- Roadmap Section -->
+            <div class="content-card">
+                <h3 class="section-title">
+                    <i class="fas fa-map-signs"></i> Development Roadmap
+                </h3>
+                <div class="roadmap-box">
+                    {{ project.roadmap|safe }}
+                </div>
+            </div>
+
+            <!-- Learning Resources Section -->
+            <div class="content-card">
+                <h3 class="section-title">
+                    <i class="fas fa-graduation-cap" style="color: #f59e0b; background: rgba(245, 158, 11, 0.1);"></i> Learning Resources
+                </h3>
+                <div class="resources-box" style="border-left-color: #f59e0b;">
+                    {{ project.learning_resources|safe }}
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- SIDEBAR ACTIONS -->
+        <div class="col-lg-4">
+            <div class="action-sidebar">
+                <div class="content-card text-center" style="padding: 2.5rem 2rem;">
+                    <h4 class="fw-bold mb-4 text-white">Project Actions</h4>
+                    
+                    {% if saved %}
+                        <button class="btn btn-save-project w-100 mb-3 disabled" style="background: #10b981; box-shadow: 0 4px 15px rgba(16,185,129,0.4);">
+                            <i class="fas fa-check-circle me-2 fs-5 align-middle"></i> Blueprint Saved
+                        </button>
+                        <form action="{% url 'remove_saved_project' project.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger w-100 py-3 rounded-3 fw-bold">
+                                <i class="fas fa-trash-alt me-2"></i> Remove Bookmark
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'save_project' project.pk %}" class="btn btn-save-project w-100 mb-3 text-decoration-none d-block">
+                            <i class="fas fa-bookmark me-2 fs-5 align-middle"></i> Save to Dashboard
+                        </a>
+                    {% endif %}
+                    
+                    <hr class="my-4" style="border-color: var(--border);">
+                    
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100 py-3 rounded-3">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                    </a>
+                </div>
+                
+                <!-- Quick Tips Card -->
+                <div class="content-card mt-4" style="background: linear-gradient(to bottom right, rgba(30, 34, 41, 0.8), rgba(9, 0, 20, 0.9));">
+                    <h5 class="text-accent mb-3"><i class="fas fa-lightbulb me-2"></i>Pro Tip</h5>
+                    <p class="text-secondary small mb-0" style="line-height: 1.6;">
+                        Don't rush through the roadmap! Treat each phase as a mini-project. If you get stuck, consult the learning resources linked in the bottom section before asking for help.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const projectId = "{{ project.pk }}";
+        const rawRoadmap = `{{ project.roadmap|escapejs }}`;
+        const roadmapContainer = document.querySelector('.roadmap-box');
+
+        // Check if rawRoadmap is empty
+        if (!rawRoadmap || rawRoadmap.trim() === '') {
+            roadmapContainer.innerHTML = '<div class="text-muted">No roadmap available.</div>';
+            return;
+        }
+
+        // 1. Parsing Logic
+        function parseRoadmap(text) {
+            const lines = text.split('\n');
+            const phases = [];
+            let currentPhase = null;
+
+            lines.forEach(line => {
+                line = line.trim();
+                if (!line) return;
+
+                // Match Phase title (### Phase X: ... or Phase X: ...)
+                const phaseMatch = line.match(/^(?:###\s*)?(Phase\s+\d+:\s*.*)$/i) || line.match(/^(?:###\s*)(.*)$/);
+                if (phaseMatch) {
+                    currentPhase = {
+                        title: phaseMatch[1].trim(),
+                        tasks: []
+                    };
+                    phases.push(currentPhase);
+                } else {
+                    // Match task: - **Title:** description or - description
+                    const taskMatch = line.match(/^[-*]\s*(.*)$/);
+                    if (taskMatch) {
+                        let taskText = taskMatch[1].trim();
+                        // Check for bold prefix: **Bold Title:** Rest of text
+                        const boldMatch = taskText.match(/^\*\*(.*?)\*\*(.*)$/);
+                        let title = '';
+                        let desc = taskText;
+                        if (boldMatch) {
+                            title = boldMatch[1].trim();
+                            desc = boldMatch[2].trim();
+                            
+                            // Clean up trailing colon or space from title if present
+                            if (title.endsWith(':')) {
+                                title = title.slice(0, -1);
+                            }
+                        }
+                        
+                        currentPhase = currentPhase || { title: 'General Steps', tasks: [] };
+                        if (phases.indexOf(currentPhase) === -1) {
+                            phases.push(currentPhase);
+                        }
+
+                        currentPhase.tasks.push({
+                            title: title,
+                            description: desc
+                        });
+                    } else if (line.toLowerCase().startsWith('step')) {
+                        // Handle "Step 1: Setup" format
+                        const stepMatch = line.match(/^(Step\s+\d+:\s*)(.*)$/i) || [null, '', line];
+                        
+                        currentPhase = currentPhase || { title: 'Development Steps', tasks: [] };
+                        if (phases.indexOf(currentPhase) === -1) {
+                            phases.push(currentPhase);
+                        }
+
+                        currentPhase.tasks.push({
+                            title: stepMatch[1].trim(),
+                            description: stepMatch[2].trim()
+                        });
+                    }
+                }
+            });
+
+            return phases;
+        }
+
+        const phases = parseRoadmap(rawRoadmap);
+
+        if (phases.length === 0) {
+            // Render plain text if it could not be parsed as structured phases
+            roadmapContainer.innerHTML = `<pre style="white-space: pre-wrap; font-family: inherit; color: inherit; margin: 0;">${rawRoadmap}</pre>`;
+            return;
+        }
+
+        // 2. State persistence key
+        const storageKey = `ideaforge_project_${projectId}_progress`;
+        let progressState = JSON.parse(localStorage.getItem(storageKey)) || {};
+
+        // 3. Render HTML Structure
+        function renderRoadmap() {
+            roadmapContainer.innerHTML = '';
+            
+            // Create Progress Header
+            const progressHeader = document.createElement('div');
+            progressHeader.className = 'mb-4';
+            progressHeader.innerHTML = `
+                <div class="progress-text">
+                    <span id="progress-percent">0% Completed</span>
+                    <span id="progress-counts">0 of 0 tasks done</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                </div>
+            `;
+            roadmapContainer.appendChild(progressHeader);
+
+            // Create Phases list
+            const phasesList = document.createElement('div');
+            phasesList.className = 'phases-list';
+            
+            phases.forEach((phase, phaseIdx) => {
+                const phaseCard = document.createElement('div');
+                phaseCard.className = 'phase-card';
+                phaseCard.id = `phase-card-${phaseIdx}`;
+
+                const phaseHeader = document.createElement('div');
+                phaseHeader.className = 'phase-header';
+                phaseHeader.innerHTML = `
+                    <div class="phase-title-container">
+                        <span class="phase-title">${phase.title}</span>
+                        <span class="badge phase-badge todo" id="phase-badge-${phaseIdx}">To Do</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                `;
+
+                const phaseBody = document.createElement('div');
+                phaseBody.className = 'phase-body';
+
+                phase.tasks.forEach((task, taskIdx) => {
+                    const taskId = `${phaseIdx}-${taskIdx}`;
+                    const isChecked = progressState[taskId] || false;
+                    
+                    const taskItem = document.createElement('div');
+                    taskItem.className = `task-item ${isChecked ? 'completed-task' : ''}`;
+                    taskItem.dataset.taskId = taskId;
+                    taskItem.innerHTML = `
+                        <div class="task-checkbox-wrapper">
+                            <input type="checkbox" class="task-checkbox" id="check-${taskId}" ${isChecked ? 'checked' : ''}>
+                            <span class="checkmark"></span>
+                        </div>
+                        <div class="task-content">
+                            ${task.title ? `<div class="task-title">${task.title}</div>` : ''}
+                            <div class="task-description">${task.description}</div>
+                        </div>
+                    `;
+
+                    // Event: Checkbox click / Item click
+                    taskItem.addEventListener('click', function(e) {
+                        // Prevent event propagation if clicking custom checkmark or input itself (handled by browser)
+                        if (e.target.tagName === 'INPUT') return;
+                        
+                        const checkbox = taskItem.querySelector('.task-checkbox');
+                        checkbox.checked = !checkbox.checked;
+                        handleTaskChange(taskId, checkbox.checked);
+                    });
+
+                    // Event: Direct checkbox change
+                    const checkbox = taskItem.querySelector('.task-checkbox');
+                    checkbox.addEventListener('change', function(e) {
+                        handleTaskChange(taskId, e.target.checked);
+                    });
+
+                    phaseBody.appendChild(taskItem);
+                });
+
+                phaseCard.appendChild(phaseHeader);
+                phaseCard.appendChild(phaseBody);
+                phasesList.appendChild(phaseCard);
+
+                // Event: Header click to toggle collapse/expand
+                phaseHeader.addEventListener('click', function() {
+                    phaseCard.classList.toggle('active');
+                });
+            });
+
+            roadmapContainer.appendChild(phasesList);
+
+            // Add Reset Button
+            const resetButtonContainer = document.createElement('div');
+            resetButtonContainer.className = 'd-flex justify-content-end mt-3';
+            resetButtonContainer.innerHTML = `
+                <button class="btn btn-sm btn-outline-secondary py-2 px-3 text-white border-0" id="reset-roadmap-btn" style="background: rgba(255,255,255,0.05); border-radius: 8px;">
+                    <i class="fas fa-undo me-2"></i> Reset Progress
+                </button>
+            `;
+            roadmapContainer.appendChild(resetButtonContainer);
+
+            // Event: Reset
+            document.getElementById('reset-roadmap-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to reset your progress for this project roadmap?')) {
+                    progressState = {};
+                    localStorage.setItem(storageKey, JSON.stringify(progressState));
+                    renderRoadmap();
+                    updateOverallProgress();
+                }
+            });
+
+            // Expand the first phase by default on initial render
+            if (phasesList.children.length > 0) {
+                phasesList.children[0].classList.add('active');
+            }
+        }
+
+        // Handle Task Complete/Incomplete toggle
+        function handleTaskChange(taskId, isChecked) {
+            const taskItem = document.querySelector(`.task-item[data-task-id="${taskId}"]`);
+            const checkbox = document.getElementById(`check-${taskId}`);
+            
+            if (isChecked) {
+                taskItem.classList.add('completed-task');
+                checkbox.checked = true;
+                progressState[taskId] = true;
+            } else {
+                taskItem.classList.remove('completed-task');
+                checkbox.checked = false;
+                delete progressState[taskId];
+            }
+            
+            localStorage.setItem(storageKey, JSON.stringify(progressState));
+            updateOverallProgress();
+        }
+
+        // Calculate and update progress bar, task counts, and phase badges
+        function updateOverallProgress() {
+            let totalTasks = 0;
+            let completedTasks = 0;
+
+            phases.forEach((phase, phaseIdx) => {
+                let phaseTotal = phase.tasks.length;
+                let phaseCompleted = 0;
+
+                phase.tasks.forEach((_, taskIdx) => {
+                    totalTasks++;
+                    const taskId = `${phaseIdx}-${taskIdx}`;
+                    if (progressState[taskId]) {
+                        completedTasks++;
+                        phaseCompleted++;
+                    }
+                });
+
+                // Update Phase Badge
+                const badge = document.getElementById(`phase-badge-${phaseIdx}`);
+                const phaseCard = document.getElementById(`phase-card-${phaseIdx}`);
+                if (badge) {
+                    if (phaseCompleted === 0) {
+                        badge.textContent = 'To Do';
+                        badge.className = 'badge phase-badge todo';
+                        phaseCard.classList.remove('completed-phase');
+                    } else if (phaseCompleted === phaseTotal) {
+                        badge.textContent = 'Completed';
+                        badge.className = 'badge phase-badge completed';
+                        phaseCard.classList.add('completed-phase');
+                    } else {
+                        badge.textContent = 'In Progress';
+                        badge.className = 'badge phase-badge in-progress';
+                        phaseCard.classList.remove('completed-phase');
+                    }
+                }
+            });
+
+            // Update Progress Bar
+            const percent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            const progressBar = document.getElementById('progress-bar-fill');
+            const percentText = document.getElementById('progress-percent');
+            const countsText = document.getElementById('progress-counts');
+
+            if (progressBar) progressBar.style.width = `${percent}%`;
+            if (percentText) percentText.textContent = `${percent}% Completed`;
+            if (countsText) countsText.textContent = `${completedTasks} of ${totalTasks} tasks done`;
+        }
+
+        // Initialize Rendering and Progress
+        renderRoadmap();
+        updateOverallProgress();
+
+        // Keep target blank security styling fix
+        const resourceLinks = document.querySelectorAll('.resources-box a, .roadmap-box a');
+        resourceLinks.forEach(link => {
+            if (link.getAttribute('target') === '_blank') {
+                link.setAttribute('rel', 'noopener noreferrer');
+            }
+            let href = link.getAttribute('href');
+            if (href && href.includes(' ')) {
+                link.setAttribute('href', encodeURI(href));
+            }
+        });
+    });
+</script>
+{% endblock %}
