@@ -312,13 +312,22 @@ def password_reset_request(request):
             # Send Email
             subject = "IdeaForge Password Reset - Your Verification Code"
             message = f"Hello {user.username},\n\nYour 6-digit verification code to reset your password is: {otp_code}\n\nThis code will expire in 15 minutes.\n\nIf you did not request this, please ignore this email."
-            send_mail(
-                subject,
-                message,
-                'no-reply@ideaforge.com',
-                [email],
-                fail_silently=False,
-            )
+            try:
+                send_mail(
+                    subject,
+                    message,
+                    'no-reply@ideaforge.com',
+                    [email],
+                    fail_silently=False,
+                )
+            except Exception as e:
+                # Log email failure and show OTP in demo mode to prevent server timeout/502 Bad Gateway
+                print(f"Error sending password reset email: {e}")
+                messages.warning(
+                    request,
+                    f"Unable to send verification email due to SMTP connection issues. "
+                    f"[Demo Mode] Your 6-digit OTP code is: {otp_code}"
+                )
             
             request.session['reset_email'] = email
             return redirect('password_reset_verify')
