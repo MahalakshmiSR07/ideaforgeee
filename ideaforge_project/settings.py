@@ -147,15 +147,9 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
-# Email SMTP Configuration (Configured for Gmail)
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_TIMEOUT = 5
+# Email Configuration (Configured for Resend HTTP API)
+EMAIL_BACKEND = 'core.email_backend.ResendEmailBackend'
+RESEND_API_KEY = os.environ.get('RESEND_API_KEY', 're_PGvVnMj6_B1rCDEffLaLKPJuytjXEPtoE')
+RESEND_FROM_EMAIL = 'onboarding@resend.dev'
 
-# TODO: Replace these with your actual Gmail credentials
-# WARNING: Do not use your normal password. You must generate an "App Password" in your Google Account.
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'mahalakshmisr725@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'jhqxbxsndvjmtpwu')
 
