@@ -152,6 +152,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+EMAIL_TIMEOUT = 5
 
 # TODO: Replace these with your actual Gmail credentials
 # WARNING: Do not use your normal password. You must generate an "App Password" in your Google Account.
