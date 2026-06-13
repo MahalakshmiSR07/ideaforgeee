@@ -157,5 +157,5 @@ EMAIL_TIMEOUT = 5
 # TODO: Replace these with your actual Gmail credentials
 # WARNING: Do not use your normal password. You must generate an "App Password" in your Google Account.
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'mahalakshmisr725@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'bfubdqwkdzfirngq')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'jhqxbxsndvjmtpwu')
 
