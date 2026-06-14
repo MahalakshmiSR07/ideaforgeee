@@ -147,9 +147,10 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
-# Email Configuration (Configured for Resend HTTP API)
-EMAIL_BACKEND = 'core.email_backend.ResendEmailBackend'
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY', 're_PGvVnMj6_B1rCDEffLaLKPJuytjXEPtoE')
-RESEND_FROM_EMAIL = 'onboarding@resend.dev'
+# Email Configuration (Configured for Brevo HTTP API)
+EMAIL_BACKEND = 'core.email_backend.BrevoEmailBackend'
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY')
+BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL', 'mahalakshmisr725@gmail.com')
+
 
 
